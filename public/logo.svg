@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 200" role="img" aria-label="Logo Pegada Zero">
+  <!-- Folha -->
+  <g transform="translate(20,20)">
+    <path d="M80 0c52 0 96 44 96 96 0 41-25 77-61 90-10 4-21-2-24-12-16-48-53-84-101-100-10-3-14-15-8-24C10 20 42 0 80 0z" fill="#77C66E"/>
+    <!-- Haste/veia da folha -->
+    <path d="M64 52c-8 24-18 49-34 70-2 3-1 7 2 9l12 8c3 2 7 1 9-2 18-26 30-55 38-85" fill="none" stroke="#0F5D45" stroke-width="6" stroke-linecap="round"/>
+  </g>
+
+  <!-- Pegada -->
+  <g transform="translate(160,24)" fill="#0F5D45">
+    <ellipse cx="62" cy="98" rx="40" ry="62"/>
+    <circle cx="28" cy="26" r="18"/>
+    <circle cx="54" cy="18" r="16"/>
+    <circle cx="77" cy="20" r="14"/>
+    <circle cx="98" cy="28" r="12"/>
+  </g>
+
+  <!-- Texto -->
+  <g transform="translate(300,40)">
+    <text x="0" y="48" font-family="Segoe UI, Arial, sans-serif" font-size="56" font-weight="700" fill="#0F5D45">Pegada</text>
+    <text x="0" y="120" font-family="Segoe UI, Arial, sans-serif" font-size="56" font-weight="700" fill="#0F5D45">Zero</text>
+  </g>
+</svg>

@@ -1,0 +1,41 @@
+# Dependencies e caches
+node_modules/
+.pnp/
+.pnp.js
+.parcel-cache/
+.vite/
+
+# Builds e distribuições
+dist/
+build/
+coverage/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+*.log
+
+# Ambiente
+.env
+server/.env
+
+# Python
+.venv/
+venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.mypy_cache/
+
+# Editor / SO
+.DS_Store
+.idea/
+.vscode/
+
+# Outros
+*.local
+*.tmp
+*.swp
+*.swo

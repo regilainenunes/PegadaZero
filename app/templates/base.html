@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{ title if title else 'PegadaZero' }}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="/static/css/theme.css" />
+  </head>
+  <body class="bg-background text-foreground min-h-screen flex flex-col">
+    <header class="bg-card shadow">
+      <div class="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
+        <a href="/" class="font-semibold text-xl">PegadaZero</a>
+        <nav class="flex gap-4 text-sm">
+          <a href="/empresa" class="hover:text-primary">Empresa</a>
+          <a href="/sobre-nos" class="hover:text-primary">Sobre nós</a>
+          <a href="/blog" class="hover:text-primary">Blog</a>
+          <a href="/carreiras" class="hover:text-primary">Carreiras</a>
+          <a href="/legal" class="hover:text-primary">Legal</a>
+          <a href="/privacidade" class="hover:text-primary">Privacidade</a>
+          <a href="/termos" class="hover:text-primary">Termos</a>
+          <a href="/seguranca" class="hover:text-primary">Segurança</a>
+        </nav>
+      </div>
+    </header>
+    <main class="flex-1">
+      <div class="max-w-7xl mx-auto px-4 py-10">
+        {% block content %}{% endblock %}
+      </div>
+    </main>
+    <footer class="bg-card border-t mt-8">
+      <div class="max-w-7xl mx-auto px-4 py-6 text-sm text-muted-foreground flex flex-wrap gap-x-6 gap-y-2">
+        <span>© {{ (now() if now else '') }} PegadaZero</span>
+        <a href="/privacidade" class="hover:text-primary">Privacidade</a>
+        <a href="/termos" class="hover:text-primary">Termos</a>
+        <a href="/seguranca" class="hover:text-primary">Segurança</a>
+      </div>
+    </footer>
+  </body>
+  </html>

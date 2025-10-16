@@ -1,0 +1,13 @@
+fastapi
+uvicorn
+pymongo
+motor
+beanie
+python-dotenv
+passlib[bcrypt]
+PyJWT
+Jinja2
+pandas
+weasyprint
+plotly
+fastapi-mail
