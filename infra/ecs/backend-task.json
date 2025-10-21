@@ -1,0 +1,29 @@
+{
+  "family": "pegadazero-backend",
+  "networkMode": "awsvpc",
+  "requiresCompatibilities": ["FARGATE"],
+  "cpu": "512",
+  "memory": "1024",
+  "executionRoleArn": "arn:aws:iam::<ACCOUNT_ID>:role/ecsTaskExecutionRole",
+  "taskRoleArn": "arn:aws:iam::<ACCOUNT_ID>:role/pegadazero-backend-role",
+  "containerDefinitions": [
+    {
+      "name": "backend",
+      "image": "<ECR_REGISTRY>/<ECR_BACKEND_REPO>:<TAG>",
+      "essential": true,
+      "portMappings": [{ "containerPort": 5000, "protocol": "tcp" }],
+      "environment": [
+        { "name": "SQL_DATABASE_URL", "value": "sqlite:////app/data/pegadazero.db" },
+        { "name": "KIWIFY_API_URL", "value": "https://api.kiwify.com" }
+      ],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/pegadazero-backend",
+          "awslogs-region": "<AWS_REGION>",
+          "awslogs-stream-prefix": "ecs"
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,53 @@
+name: Deploy to DigitalOcean App Platform
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    env:
+      REGISTRY: registry.digitalocean.com/${{ secrets.DOCR_REGISTRY }}
+      BACKEND_IMAGE: pegadazero-backend
+      TAG: ${{ github.sha }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Authenticate doctl
+        uses: digitalocean/action-doctl@v2
+        with:
+          token: ${{ secrets.DO_API_TOKEN }}
+
+      - name: Login to DOCR
+        run: doctl registry login --expiry-seconds 600
+
+      - name: Build backend image
+        run: |
+          docker build \
+            -f app/Dockerfile \
+            -t "$REGISTRY/$BACKEND_IMAGE:$TAG" \
+            -t "$REGISTRY/$BACKEND_IMAGE:latest" \
+            .
+
+      - name: Push backend image
+        run: |
+          docker push "$REGISTRY/$BACKEND_IMAGE:$TAG"
+          docker push "$REGISTRY/$BACKEND_IMAGE:latest"
+
+      - name: Update App Platform spec
+        run: |
+          # Substitui tag no app.yaml se desejar fixar a versão específica
+          sed -i "s/tag: latest/tag: $TAG/g" infra/do/app.yaml
+          doctl apps update ${{ secrets.DO_APP_ID }} --spec infra/do/app.yaml --format ID,DefaultIngress,ActiveDeploymentID
+
+      - name: Restore app.yaml to latest tag
+        run: |
+          git checkout -- infra/do/app.yaml || true

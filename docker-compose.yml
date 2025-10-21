@@ -1,0 +1,28 @@
+version: "3.9"
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: app/Dockerfile
+    environment:
+      - SQL_DATABASE_URL=sqlite:///./data/pegadazero.db
+      - KIWIFY_API_URL=${KIWIFY_API_URL:-https://api.kiwify.com}
+      - KIWIFY_API_KEY=${KIWIFY_API_KEY:-}
+    volumes:
+      - backend_data:/app/data
+    ports:
+      - "5000:5000"
+
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    depends_on:
+      - backend
+    ports:
+      - "8080:80"
+    environment:
+      - VITE_API_URL=http://localhost:5000/api
+
+volumes:
+  backend_data:

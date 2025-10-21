@@ -11,6 +11,9 @@ class Settings:
     ACCESS_TOKEN_EXPIRE_MINUTES: int = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "60"))
     ENV: str = os.getenv("ENV", "development")
     JWT_ALGORITHM: str = "HS256"
+    # Kiwify
+    KIWIFY_API_KEY: str = os.getenv("KIWIFY_API_KEY", "")
+    KIWIFY_API_URL: str = os.getenv("KIWIFY_API_URL", "https://api.kiwify.com.br")
 
 
 settings = Settings()

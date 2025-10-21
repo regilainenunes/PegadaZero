@@ -1,0 +1,51 @@
+name: Build and Push to AWS ECR
+
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    env:
+      AWS_REGION: ${{ secrets.AWS_REGION }}
+      ECR_BACKEND_REPO: ${{ secrets.ECR_BACKEND_REPO }}
+      ECR_FRONTEND_REPO: ${{ secrets.ECR_FRONTEND_REPO }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: ${{ env.AWS_REGION }}
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+          role-session-name: github-actions-ecr
+
+      - name: Login to Amazon ECR
+        id: ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Set tags
+        id: tags
+        run: |
+          echo "backend_tag=${{ steps.ecr.outputs.registry }}/${{ env.ECR_BACKEND_REPO }}:$(date +%Y%m%d%H%M%S)-${GITHUB_SHA::7}" >> $GITHUB_OUTPUT
+          echo "frontend_tag=${{ steps.ecr.outputs.registry }}/${{ env.ECR_FRONTEND_REPO }}:$(date +%Y%m%d%H%M%S)-${GITHUB_SHA::7}" >> $GITHUB_OUTPUT
+
+      - name: Build backend image
+        run: |
+          docker build -f app/Dockerfile -t ${{ steps.tags.outputs.backend_tag }} .
+
+      - name: Build frontend image
+        run: |
+          docker build -f Dockerfile.frontend -t ${{ steps.tags.outputs.frontend_tag }} .
+
+      - name: Push backend image
+        run: docker push ${{ steps.tags.outputs.backend_tag }}
+
+      - name: Push frontend image
+        run: docker push ${{ steps.tags.outputs.frontend_tag }}

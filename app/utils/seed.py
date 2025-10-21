@@ -24,17 +24,23 @@ def ensure_sql_seed() -> None:
             db.refresh(admin_sql)
 
         # Master em SQL
-        master_sql = db.query(UserSQL).filter(UserSQL.email == "master@pegadazero.com.br").first()
+        master_sql = db.query(UserSQL).filter(UserSQL.email == "master@pegadazero.local").first()
         if not master_sql:
             master_sql = UserSQL(
-                name="master",
-                email="master@pegadazero.com.br",
-                password=hash_password("123adm"),
-                role=Role.admin.value,
+                name="Master",
+                email="master@pegadazero.local",
+                password=hash_password("Master123!"),
+                role="Master",
             )
             db.add(master_sql)
             db.commit()
             db.refresh(master_sql)
+        else:
+            # Garante papel Master caso exista com outro papel
+            if (master_sql.role or "").strip() != "Master":
+                master_sql.role = "Master"
+                db.add(master_sql)
+                db.commit()
 
         # Organização master
         org_sql = db.query(OrganizationSQL).filter(OrganizationSQL.name == "master").first()
@@ -85,3 +91,16 @@ async def ensure_admin_user() -> None:
 
     # Sempre garantir seed em SQL
     ensure_sql_seed()
+
+
+# Bloco CLI para executar o seed diretamente
+if __name__ == "__main__":
+    import argparse
+    parser = argparse.ArgumentParser(description="Seed de usuários padrão (Admin e Master) em SQL")
+    parser.add_argument("--create-master", action="store_true", help="Garante a criação/atualização do usuário Master")
+    args = parser.parse_args()
+
+    ensure_sql_seed()
+    if args.create_master:
+        # A função ensure_sql_seed já cobre criação/atualização do Master
+        pass

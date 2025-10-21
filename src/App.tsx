@@ -13,6 +13,8 @@ import Termos from './pages/Termos'
 import Seguranca from './pages/Seguranca'
 import ProtectedRoute from './components/ProtectedRoute'
 import { AuthProvider } from './contexts/AuthContext'
+import MasterRoute from './components/MasterRoute'
+import AdminDashboardMaster from './pages/AdminDashboardMaster'
 
 function App() {
   return (
@@ -38,6 +40,11 @@ function App() {
           <Route path="/dashboard/atividades" element={<Dashboard />} />
           <Route path="/dashboard/dicas" element={<Dashboard />} />
           <Route path="/dashboard/configuracoes" element={<Dashboard />} />
+        </Route>
+
+        {/* Rota Master */}
+        <Route element={<MasterRoute />}>
+          <Route path="/admin/dashboard-master" element={<AdminDashboardMaster />} />
         </Route>
       </Routes>
     </AuthProvider>
