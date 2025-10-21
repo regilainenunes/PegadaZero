@@ -38,7 +38,7 @@ export default function Register() {
         <Link to="/">
           <img
             className="mx-auto h-16 w-auto"
-            src="/logo.svg"
+            src="/logotipo.svg"
             alt="PegadaZero"
           />
         </Link>

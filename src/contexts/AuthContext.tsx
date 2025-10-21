@@ -32,7 +32,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const validateToken = useCallback(async () => {
     try {
-      const userData = await authService.getProfile();
+      const profile = await authService.getProfile();
+      const userData: User = {
+        _id: profile._id || profile.id,
+        name: profile.name,
+        email: profile.email,
+        role: profile.role,
+      };
       setUser(userData);
     } catch (error) {
       console.error('Token inválido:', error);
@@ -58,19 +64,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setLoading(true);
       
       const response = await authService.login(email, password);
-      
-      if (response && response.token) {
+
+      // Aceitar tanto 'token' (Node) quanto 'access_token' (FastAPI)
+      const token: string | undefined = response?.token || response?.access_token;
+      if (token) {
+        localStorage.setItem('token', token);
+        // Buscar perfil após login para preencher dados do usuário
+        const profile = await authService.getProfile();
         const userData: User = {
-          _id: response._id,
-          name: response.name,
-          email: response.email,
-          role: response.role,
-          company: response.company
+          _id: profile._id || profile.id,
+          name: profile.name,
+          email: profile.email,
+          role: profile.role,
         };
-        
         setUser(userData);
         localStorage.setItem('pegadazero_user', JSON.stringify(userData));
-        localStorage.setItem('token', response.token);
         setLoading(false);
         return true;
       }
@@ -89,19 +97,22 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setLoading(true);
       
       const response = await authService.register(name, email, password);
-      
-      if (response && response.token) {
+
+      // Aceitar tanto 'token' (Node) quanto 'access_token' (FastAPI)
+      const token: string | undefined = response?.token || response?.access_token;
+      if (token) {
+        localStorage.setItem('token', token);
+        // Buscar perfil após registro para preencher dados do usuário
+        const profile = await authService.getProfile();
         const userData: User = {
-          _id: response._id,
-          name: response.name,
-          email: response.email,
-          role: response.role,
-          company
+          _id: profile._id || profile.id,
+          name: profile.name,
+          email: profile.email,
+          role: profile.role,
+          company,
         };
-        
         setUser(userData);
         localStorage.setItem('pegadazero_user', JSON.stringify(userData));
-        localStorage.setItem('token', response.token);
         setLoading(false);
         return true;
       }

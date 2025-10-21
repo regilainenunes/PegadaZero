@@ -5,13 +5,27 @@ export default function HomePage() {
     <div className="min-h-screen bg-gradient-to-b from-green-50 to-green-100">
       <header className="container mx-auto px-4 py-6 flex justify-between items-center">
         <div className="flex items-center">
-          <img src="/logo.svg" alt="PegadaZero" className="h-10 w-auto" />
+          <img src="/logotipo.svg" alt="PegadaZero" className="h-10 w-auto" />
         </div>
         <nav>
-          <ul className="flex space-x-6">
+          <ul className="flex items-center gap-6">
             <li><a href="#features" className="text-green-700 hover:text-green-900">Recursos</a></li>
             <li><a href="#pricing" className="text-green-700 hover:text-green-900">Preços</a></li>
-            <li><Link to="/sobre-nos" className="text-green-700 hover:text-green-900">Sobre</Link></li>
+            <li className="relative group">
+              <button className="text-green-700 hover:text-green-900">Institucional</button>
+              <div className="absolute right-0 mt-2 w-56 bg-white border border-green-100 rounded-md shadow-lg opacity-0 scale-95 group-hover:opacity-100 group-hover:scale-100 pointer-events-none group-hover:pointer-events-auto transition ease-out duration-150 z-50">
+                <ul className="py-2">
+                  <li><Link to="/empresa" className="block px-4 py-2 text-green-700 hover:bg-green-50 hover:text-green-900">Empresa</Link></li>
+                  <li><Link to="/sobre-nos" className="block px-4 py-2 text-green-700 hover:bg-green-50 hover:text-green-900">Sobre Nós</Link></li>
+                  <li><Link to="/blog" className="block px-4 py-2 text-green-700 hover:bg-green-50 hover:text-green-900">Blog</Link></li>
+                  <li><Link to="/carreiras" className="block px-4 py-2 text-green-700 hover:bg-green-50 hover:text-green-900">Carreiras</Link></li>
+                  <li><Link to="/legal" className="block px-4 py-2 text-green-700 hover:bg-green-50 hover:text-green-900">Legal</Link></li>
+                  <li><Link to="/privacidade" className="block px-4 py-2 text-green-700 hover:bg-green-50 hover:text-green-900">Privacidade</Link></li>
+                  <li><Link to="/termos" className="block px-4 py-2 text-green-700 hover:bg-green-50 hover:text-green-900">Termos</Link></li>
+                  <li><Link to="/seguranca" className="block px-4 py-2 text-green-700 hover:bg-green-50 hover:text-green-900">Segurança</Link></li>
+                </ul>
+              </div>
+            </li>
             <li><Link to="/login" className="text-green-700 hover:text-green-900">Entrar</Link></li>
             <li><Link to="/register" className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md">Registrar</Link></li>
           </ul>
@@ -214,6 +228,7 @@ export default function HomePage() {
             <div>
               <h4 className="font-semibold mb-4">Empresa</h4>
               <ul className="space-y-2">
+                <li><Link to="/empresa" className="hover:text-white">Empresa</Link></li>
                 <li><Link to="/sobre-nos" className="hover:text-white">Sobre nós</Link></li>
                 <li><Link to="/blog" className="hover:text-white">Blog</Link></li>
                 <li><Link to="/carreiras" className="hover:text-white">Carreiras</Link></li>
@@ -222,6 +237,7 @@ export default function HomePage() {
             <div>
               <h4 className="font-semibold mb-4">Legal</h4>
               <ul className="space-y-2">
+                <li><Link to="/legal" className="hover:text-white">Legal</Link></li>
                 <li><Link to="/privacidade" className="hover:text-white">Privacidade</Link></li>
                 <li><Link to="/termos" className="hover:text-white">Termos</Link></li>
                 <li><Link to="/seguranca" className="hover:text-white">Segurança</Link></li>

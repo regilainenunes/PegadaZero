@@ -1,6 +1,7 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:5000/api';
+// Permitir alternar entre Node (5000) e FastAPI (8000) via variável de ambiente
+const API_URL = (import.meta as any).env?.VITE_API_URL || 'http://localhost:5000/api';
 
 // Criar instância do axios com URL base
 const api = axios.create({
