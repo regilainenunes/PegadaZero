@@ -177,6 +177,8 @@ export default function Login() {
                 </a>
               </div>
             </div>
+
+            {/* Ações sociais permanecem como placeholder até integração real */}
           </div>
         </div>
       </div>

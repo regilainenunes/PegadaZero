@@ -1,6 +1,116 @@
 import { Link } from 'react-router-dom'
+import { useEffect, useState } from 'react'
 
 export default function HomePage() {
+  // Banner rotativo a partir de imagens na pasta public
+  const banners = ['/Banner1.jpg', '/Banner2.jpg', '/Banner3.jpg', '/Banner4.jpg']
+  const [currentBanner, setCurrentBanner] = useState(0)
+  useEffect(() => {
+    const id = setInterval(() => setCurrentBanner((i) => (i + 1) % banners.length), 5000)
+    return () => clearInterval(id)
+  }, [])
+
+  // Hook simples de contagem regressiva
+  const useCountdown = (targetISO: string) => {
+    const targetDate = new Date(targetISO)
+    const [diffMs, setDiffMs] = useState(targetDate.getTime() - Date.now())
+    useEffect(() => {
+      const t = setInterval(() => setDiffMs(targetDate.getTime() - Date.now()), 1000)
+      return () => clearInterval(t)
+    }, [targetISO])
+    const clamped = Math.max(0, diffMs)
+    const totalSeconds = Math.floor(clamped / 1000)
+    const days = Math.floor(totalSeconds / (3600 * 24))
+    const hours = Math.floor((totalSeconds % (3600 * 24)) / 3600)
+    const minutes = Math.floor((totalSeconds % 3600) / 60)
+    const seconds = totalSeconds % 60
+    return { days, hours, minutes, seconds }
+  }
+
+  // Contagem com progresso visual (percentual restante entre uma data de início e meta)
+  const useProgressCountdown = (startISO: string, targetISO: string) => {
+    const startDate = new Date(startISO)
+    const targetDate = new Date(targetISO)
+    const totalMs = Math.max(0, targetDate.getTime() - startDate.getTime())
+    const [diffMs, setDiffMs] = useState(Math.max(0, targetDate.getTime() - Date.now()))
+    useEffect(() => {
+      const t = setInterval(() => setDiffMs(Math.max(0, targetDate.getTime() - Date.now())), 1000)
+      return () => clearInterval(t)
+    }, [startISO, targetISO])
+    const percentLeft = totalMs > 0 ? Math.min(100, Math.max(0, (diffMs / totalMs) * 100)) : 0
+    const totalSeconds = Math.floor(diffMs / 1000)
+    const days = Math.floor(totalSeconds / (3600 * 24))
+    const hours = Math.floor((totalSeconds % (3600 * 24)) / 3600)
+    const minutes = Math.floor((totalSeconds % 3600) / 60)
+    const seconds = totalSeconds % 60
+    return { percentLeft, days, hours, minutes, seconds }
+  }
+
+  const ProgressRingCard = ({
+    title,
+    description,
+    startISO,
+    targetISO,
+    sourceHref,
+    sourceLabel,
+  }: {
+    title: string
+    description: string
+    startISO: string
+    targetISO: string
+    sourceHref: string
+    sourceLabel: string
+  }) => {
+    const { percentLeft, days, hours, minutes, seconds } = useProgressCountdown(startISO, targetISO)
+    const deg = Math.round((percentLeft / 100) * 360)
+    return (
+      <div className="rounded-xl border border-green-200 bg-green-50 p-6 hover:shadow-lg hover:border-green-300 transition-all">
+        <h3 className="text-xl font-semibold text-green-800 mb-2">{title}</h3>
+        <p className="text-sm text-gray-700 mb-6">{description}</p>
+
+        <div className="flex items-center gap-6">
+          {/* Ring */}
+          <div className="relative w-40 h-40 shrink-0">
+            <div
+              className="absolute inset-0 rounded-full"
+              style={{
+                background: `conic-gradient(#22c55e ${deg}deg, #e5e7eb ${deg}deg)`,
+                transition: 'background 300ms ease-out',
+              }}
+            />
+            <div className="absolute inset-[10px] rounded-full bg-white flex flex-col items-center justify-center">
+              <span className="text-xs text-gray-500">Restante</span>
+              <span className="text-2xl font-bold text-green-700">{Math.round(percentLeft)}%</span>
+            </div>
+          </div>
+
+          {/* Counters */}
+          <div className="flex-1 grid grid-cols-4 gap-3">
+            {[
+              { value: days, label: 'dias' },
+              { value: hours, label: 'horas' },
+              { value: minutes, label: 'min' },
+              { value: seconds, label: 's' },
+            ].map((item) => (
+              <div key={item.label} className="text-center bg-white rounded-md py-3 border border-green-100">
+                <div className="text-2xl font-bold text-green-700">{item.value}</div>
+                <div className="text-xs font-normal text-gray-600">{item.label}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <p className="mt-4 text-xs text-gray-500">
+          Fonte: <a href={sourceHref} target="_blank" rel="noreferrer" className="underline hover:text-gray-700">{sourceLabel}</a>.
+        </p>
+      </div>
+    )
+  }
+
+  // Global: estimativa de ~6 anos a partir de nov/2024 (GCB 2024)
+  const globalCountdown = useCountdown('2030-11-13T00:00:00Z')
+  // Brasil: NDC 2035 (redução 59–67% vs 2005)
+  const brazilCountdown = useCountdown('2035-12-31T23:59:59Z')
   return (
     <div className="min-h-screen bg-gradient-to-b from-green-50 to-green-100">
       <header className="container mx-auto px-4 py-6 flex justify-between items-center">
@@ -33,20 +143,53 @@ export default function HomePage() {
       </header>
 
       <main>
-        {/* Hero Section */}
-        <section className="container mx-auto px-4 py-20 flex flex-col items-center text-center">
-          <h2 className="text-5xl font-bold text-green-800 mb-6">Reduza sua pegada de carbono</h2>
-          <p className="text-xl text-gray-600 max-w-2xl mb-10">
-            Monitore, reduza e compense suas emissões de carbono com nossa plataforma intuitiva.
-            Junte-se a milhares de empresas comprometidas com um futuro sustentável.
-          </p>
-          <div className="flex space-x-4">
-            <Link to="/register" className="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-md text-lg font-medium">
-              Comece agora
-            </Link>
-            <a href="#demo" className="border border-green-600 text-green-600 hover:bg-green-50 px-6 py-3 rounded-md text-lg font-medium">
-              Ver demonstração
-            </a>
+        {/* Hero Section estilo Greenpeace com banner e overlay */}
+        <section className="relative">
+          <div
+            className="absolute inset-0 bg-cover bg-center"
+            style={{ backgroundImage: `url(${banners[currentBanner]})` }}
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/30 to-black/40" />
+          <div className="relative container mx-auto px-4 py-24 text-center max-w-5xl">
+            <h2 className="text-4xl sm:text-5xl font-extrabold text-white mb-6">
+              Juntos por um futuro de baixas emissões
+            </h2>
+            <p className="text-lg sm:text-xl text-green-100 mb-10">
+              Experimente todos os recursos gratuitamente por 3 dias. Depois, continue com o plano completo por R$127/mês.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Link to="/register" className="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-md text-lg font-medium">
+                Começar teste grátis (3 dias)
+              </Link>
+              <Link to="/login" className="border border-white text-white hover:bg-white/10 px-6 py-3 rounded-md text-lg font-medium">
+                Entrar na plataforma
+              </Link>
+            </div>
+          </div>
+        </section>
+
+        {/* Countdown Section: Global e Brasil (interativo) */}
+        <section id="countdown" className="bg-white">
+          <div className="container mx-auto px-4 py-16">
+            <h2 className="text-3xl font-bold text-center text-green-800 mb-8">Contagem para metas climáticas</h2>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-6xl mx-auto">
+              <ProgressRingCard
+                title="Mundo — Orçamento 1,5°C"
+                description="Estimativa do Global Carbon Budget 2024: ~6 anos a partir de nov/2024 no ritmo atual."
+                startISO="2024-11-13T00:00:00Z"
+                targetISO="2030-11-13T00:00:00Z"
+                sourceHref="https://globalcarbonbudget.org/faqs/"
+                sourceLabel="Global Carbon Budget 2024"
+              />
+              <ProgressRingCard
+                title="Brasil — Meta NDC 2035"
+                description="Redução de 59–67% vs 2005 até 2035; neutralidade climática até 2050."
+                startISO="2025-01-01T00:00:00Z"
+                targetISO="2035-12-31T23:59:59Z"
+                sourceHref="https://www.gov.br/planalto/en/latest-news/2024/11/brazil-presents-its-new-climate-target-aligned-with-mission-1.5oc"
+                sourceLabel="Planalto — Nova NDC (2024)"
+              />
+            </div>
           </div>
         </section>
 
@@ -88,109 +231,32 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* Pricing Section */}
+                {/* Pricing Section atualizado: Gr�tis 3 dias e R$127/m�s */}
         <section id="pricing" className="py-20">
           <div className="container mx-auto px-4">
             <h2 className="text-3xl font-bold text-center text-green-800 mb-16">Planos e preços</h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-              <div className="border border-gray-200 rounded-lg p-8 bg-white shadow-sm hover:shadow-md transition-shadow">
-                <h3 className="text-xl font-semibold text-green-800 mb-2">Básico</h3>
-                <p className="text-gray-500 mb-6">Para pequenas empresas</p>
-                <p className="text-4xl font-bold mb-6">R$99<span className="text-lg text-gray-500 font-normal">/mês</span></p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+              <div className="border-2 border-green-500 rounded-lg p-8 bg-white shadow-md">
+                <h3 className="text-xl font-semibold text-green-800 mb-2">Grátis (3 dias)</h3>
+                <p className="text-gray-500 mb-6">Todos os recursos do plano de R$99</p>
+                <p className="text-4xl font-bold mb-6">R$0<span className="text-lg text-gray-500 font-normal">/3 dias</span></p>
                 <ul className="mb-8 space-y-2">
-                  <li className="flex items-center">
-                    <svg className="h-5 w-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
-                    </svg>
-                    Monitoramento básico
-                  </li>
-                  <li className="flex items-center">
-                    <svg className="h-5 w-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
-                    </svg>
-                    Relatórios mensais
-                  </li>
-                  <li className="flex items-center">
-                    <svg className="h-5 w-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
-                    </svg>
-                    Até 5 usuários
-                  </li>
+                  <li className="flex items-center"><svg className="h-5 w-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"/></svg>Monitoramento completo</li>
+                  <li className="flex items-center"><svg className="h-5 w-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"/></svg>Relatórios e recomendações</li>
+                  <li className="flex items-center"><svg className="h-5 w-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"/></svg>Até 5 usuários</li>
                 </ul>
-                <Link to="/register" className="block text-center bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md w-full">
-                  Começar
-                </Link>
+                <Link to="/register" className="block text-center bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md w-full">Testar grátis</Link>
               </div>
-              
-              <div className="border-2 border-green-500 rounded-lg p-8 bg-white shadow-md relative">
-                <span className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-green-500 text-white px-4 py-1 rounded-full text-sm font-medium">Popular</span>
-                <h3 className="text-xl font-semibold text-green-800 mb-2">Profissional</h3>
-                <p className="text-gray-500 mb-6">Para empresas em crescimento</p>
-                <p className="text-4xl font-bold mb-6">R$249<span className="text-lg text-gray-500 font-normal">/mês</span></p>
-                <ul className="mb-8 space-y-2">
-                  <li className="flex items-center">
-                    <svg className="h-5 w-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
-                    </svg>
-                    Monitoramento avançado
-                  </li>
-                  <li className="flex items-center">
-                    <svg className="h-5 w-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
-                    </svg>
-                    Relatórios semanais
-                  </li>
-                  <li className="flex items-center">
-                    <svg className="h-5 w-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
-                    </svg>
-                    Até 20 usuários
-                  </li>
-                  <li className="flex items-center">
-                    <svg className="h-5 w-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
-                    </svg>
-                    Recomendações personalizadas
-                  </li>
-                </ul>
-                <Link to="/register" className="block text-center bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md w-full">
-                  Começar
-                </Link>
-              </div>
-              
               <div className="border border-gray-200 rounded-lg p-8 bg-white shadow-sm hover:shadow-md transition-shadow">
-                <h3 className="text-xl font-semibold text-green-800 mb-2">Empresarial</h3>
-                <p className="text-gray-500 mb-6">Para grandes organizações</p>
-                <p className="text-4xl font-bold mb-6">R$499<span className="text-lg text-gray-500 font-normal">/mês</span></p>
+                <h3 className="text-xl font-semibold text-green-800 mb-2">Completo</h3>
+                <p className="text-gray-500 mb-6">Todos os recursos da plataforma</p>
+                <p className="text-4xl font-bold mb-6">R$127<span className="text-lg text-gray-500 font-normal">/mês</span></p>
                 <ul className="mb-8 space-y-2">
-                  <li className="flex items-center">
-                    <svg className="h-5 w-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
-                    </svg>
-                    Monitoramento completo
-                  </li>
-                  <li className="flex items-center">
-                    <svg className="h-5 w-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
-                    </svg>
-                    Relatórios em tempo real
-                  </li>
-                  <li className="flex items-center">
-                    <svg className="h-5 w-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
-                    </svg>
-                    Usuários ilimitados
-                  </li>
-                  <li className="flex items-center">
-                    <svg className="h-5 w-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
-                    </svg>
-                    API completa
-                  </li>
+                  <li className="flex items-center"><svg className="h-5 w-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"/></svg>Usuários ilimitados</li>
+                  <li className="flex items-center"><svg className="h-5 w-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"/></svg>Relatórios em tempo real</li>
+                  <li className="flex items-center"><svg className="h-5 w-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"/></svg>API completa</li>
                 </ul>
-                <Link to="/register" className="block text-center bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md w-full">
-                  Começar
-                </Link>
+                <Link to="/register" className="block text-center bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md w-full">Assinar</Link>
               </div>
             </div>
           </div>
@@ -245,7 +311,7 @@ export default function HomePage() {
             </div>
           </div>
           <div className="border-t border-green-700 mt-8 pt-8 flex flex-col md:flex-row justify-between items-center">
-            <p>&copy; 2023 PegadaZero. Todos os direitos reservados.</p>
+            <p>&copy; 2025 PegadaZero. Todos os direitos reservados.</p>
             <div className="flex space-x-4 mt-4 md:mt-0">
               <a href="#" className="hover:text-white">
                 <span className="sr-only">Facebook</span>

@@ -34,7 +34,10 @@ function App() {
         {/* Rotas protegidas */}
         <Route element={<ProtectedRoute />}>
           <Route path="/dashboard" element={<Dashboard />} />
-          {/* Outras rotas protegidas podem ser adicionadas aqui */}
+          <Route path="/dashboard/relatorios" element={<Dashboard />} />
+          <Route path="/dashboard/atividades" element={<Dashboard />} />
+          <Route path="/dashboard/dicas" element={<Dashboard />} />
+          <Route path="/dashboard/configuracoes" element={<Dashboard />} />
         </Route>
       </Routes>
     </AuthProvider>

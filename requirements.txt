@@ -11,3 +11,5 @@ pandas
 weasyprint
 plotly
 fastapi-mail
+openpyxl
+sqlalchemy

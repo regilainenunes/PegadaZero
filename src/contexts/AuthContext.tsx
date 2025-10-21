@@ -7,6 +7,8 @@ interface User {
   email: string;
   role: string;
   company?: string;
+  plan?: string;
+  points?: number;
 }
 
 interface AuthContextType {
@@ -16,6 +18,8 @@ interface AuthContextType {
   register: (name: string, email: string, password: string, company: string) => Promise<boolean>;
   logout: () => void;
   isAuthenticated: boolean;
+  loginTest: () => Promise<boolean>;
+  registerTest: (name?: string, email?: string, company?: string) => Promise<boolean>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -38,6 +42,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         name: profile.name,
         email: profile.email,
         role: profile.role,
+        points: profile.points ?? 0,
       };
       setUser(userData);
     } catch (error) {
@@ -76,6 +81,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           name: profile.name,
           email: profile.email,
           role: profile.role,
+          points: profile.points ?? 0,
         };
         setUser(userData);
         localStorage.setItem('pegadazero_user', JSON.stringify(userData));
@@ -96,7 +102,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       setLoading(true);
       
-      const response = await authService.register(name, email, password);
+      const response = await authService.register(name, email, password, company);
 
       // Aceitar tanto 'token' (Node) quanto 'access_token' (FastAPI)
       const token: string | undefined = response?.token || response?.access_token;
@@ -110,6 +116,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           email: profile.email,
           role: profile.role,
           company,
+          points: profile.points ?? 0,
         };
         setUser(userData);
         localStorage.setItem('pegadazero_user', JSON.stringify(userData));
@@ -117,6 +124,29 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         return true;
       }
       
+      // Se o backend não retornar token no registro, tentar login automaticamente
+      try {
+        const loginResp = await authService.login(email, password);
+        const fallbackToken: string | undefined = loginResp?.token || loginResp?.access_token;
+        if (fallbackToken) {
+          localStorage.setItem('token', fallbackToken);
+          const profile = await authService.getProfile();
+          const userData: User = {
+            _id: profile._id || profile.id,
+            name: profile.name,
+            email: profile.email,
+            role: profile.role,
+            company,
+            points: profile.points ?? 0,
+          };
+          setUser(userData);
+          localStorage.setItem('pegadazero_user', JSON.stringify(userData));
+          setLoading(false);
+          return true;
+        }
+      } catch (e) {
+        console.error('Falha no login automático após registro:', e);
+      }
       setLoading(false);
       return false;
     } catch (error) {
@@ -124,6 +154,43 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setLoading(false);
       return false;
     }
+  };
+
+  // Perfil de teste para acesso imediato ao dashboard
+  const loginTest = async (): Promise<boolean> => {
+    setLoading(true);
+    const userData: User = {
+      _id: 'test-id',
+      name: 'Perfil de Teste',
+      email: 'teste@pegadazero.local',
+      role: 'admin',
+      company: 'PegadaZero',
+      plan: 'trial',
+      points: 750,
+    };
+    localStorage.setItem('token', 'test-token');
+    localStorage.setItem('pegadazero_user', JSON.stringify(userData));
+    setUser(userData);
+    setLoading(false);
+    return true;
+  };
+
+  const registerTest = async (name?: string, email?: string, company?: string): Promise<boolean> => {
+    setLoading(true);
+    const userData: User = {
+      _id: 'test-id',
+      name: name || 'Perfil de Teste',
+      email: email || 'teste@pegadazero.local',
+      role: 'admin',
+      company: company || 'PegadaZero',
+      plan: 'trial',
+      points: 500,
+    };
+    localStorage.setItem('token', 'test-token');
+    localStorage.setItem('pegadazero_user', JSON.stringify(userData));
+    setUser(userData);
+    setLoading(false);
+    return true;
   };
 
   
@@ -134,7 +201,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     login,
     register,
     logout,
-    isAuthenticated: !!user
+    isAuthenticated: !!user,
+    loginTest,
+    registerTest,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

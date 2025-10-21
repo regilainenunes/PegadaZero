@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <title>{{ title }}</title>
+    <style>
+      @page { size: A4; margin: 20mm; }
+      body { font-family: Arial, sans-serif; color: #0f172a; }
+      h1 { color: #22c55e; margin-bottom: 8px; }
+      h2 { color: #0f172a; margin-top: 24px; margin-bottom: 8px; }
+      .muted { color: #64748b; }
+      .card { border: 1px solid #e5e7eb; border-radius: 8px; padding: 16px; margin-top: 12px; }
+      .grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+      .metric { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px; }
+      .metric h3 { margin: 0 0 4px; font-size: 14px; color: #64748b; }
+      .metric .value { font-size: 18px; font-weight: bold; color: #0f172a; }
+      table { width: 100%; border-collapse: collapse; margin-top: 12px; }
+      th { background: #22c55e; color: #fff; text-align: left; padding: 8px; font-size: 12px; }
+      td { border-bottom: 1px solid #e5e7eb; padding: 8px; font-size: 12px; }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>PegadaZero — Relatório de Emissões</h1>
+      <p class="muted">Gerado em {{ generated_at }}</p>
+      <p class="muted">Usuário: {{ user.name }} ({{ user.email }}) • Papel: {{ user.role }}</p>
+    </header>
+
+    <section class="card">
+      <h2>Resumo por Categoria</h2>
+      <div class="grid">
+        <div class="metric">
+          <h3>Energia</h3>
+          <div class="value">{{ '%.3f'|format(totals.get('energia', 0.0)) }} kg CO2e</div>
+        </div>
+        <div class="metric">
+          <h3>Transporte</h3>
+          <div class="value">{{ '%.3f'|format(totals.get('transporte', 0.0)) }} kg CO2e</div>
+        </div>
+        <div class="metric">
+          <h3>Resíduos</h3>
+          <div class="value">{{ '%.3f'|format(totals.get('residuos', 0.0)) }} kg CO2e</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Registros Detalhados</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Data</th>
+            <th>Categoria</th>
+            <th>Quantidade</th>
+            <th>Emissões (kg CO2e)</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for r in records %}
+          <tr>
+            <td>{{ r.date.strftime('%d/%m/%Y') }}</td>
+            <td>{{ r.category.capitalize() }}</td>
+            <td>{{ '%.3f'|format(r.amount) }}</td>
+            <td>{{ '%.3f'|format(r.emissions) }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </section>
+
+    <footer style="margin-top: 24px; font-size: 11px;" class="muted">
+      © 2025 PegadaZero. Todos os direitos reservados.
+    </footer>
+  </body>
+  </html>

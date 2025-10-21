@@ -3,10 +3,11 @@ import jwt
 from passlib.context import CryptContext
 from fastapi import HTTPException, Depends
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from sqlalchemy.orm import Session
 
 from ..config import settings
-from ..models.user import User
-from beanie import PydanticObjectId
+from ..sql_models import UserSQL
+from .sql_session import get_db
 
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -28,7 +29,10 @@ def create_access_token(subject: str, expires_minutes: int | None = None) -> str
     return token
 
 
-async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(security)) -> User:
+def get_current_user(
+    credentials: HTTPAuthorizationCredentials = Depends(security),
+    db: Session = Depends(get_db),
+) -> UserSQL:
     if credentials is None or credentials.scheme.lower() != "bearer":
         raise HTTPException(status_code=403, detail="Credenciais de autenticação inválidas")
 
@@ -43,8 +47,12 @@ async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(s
     user_id = payload.get("sub")
     if user_id is None:
         raise HTTPException(status_code=401, detail="Token sem subject")
+    try:
+        user_id_int = int(user_id)
+    except ValueError:
+        raise HTTPException(status_code=401, detail="Subject inválido")
 
-    user = await User.get(PydanticObjectId(user_id))
+    user = db.query(UserSQL).filter(UserSQL.id == user_id_int).first()
     if user is None:
         raise HTTPException(status_code=404, detail="Usuário não encontrado")
 

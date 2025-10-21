@@ -215,6 +215,8 @@ export default function Register() {
                 </a>
               </div>
             </div>
+
+            {/* Ações sociais permanecem como placeholder até integração real */}
           </div>
         </div>
       </div>

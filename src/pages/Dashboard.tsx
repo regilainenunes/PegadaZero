@@ -1,5 +1,10 @@
+import { Link, useLocation } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
+
 // Componente de Sidebar
 const Sidebar = () => {
+  const location = useLocation();
+  const isActive = (path: string) => location.pathname === path;
   return (
     <div className="bg-primary text-primary-foreground w-64 min-h-screen p-4">
       <div className="flex items-center mb-8">
@@ -10,45 +15,45 @@ const Sidebar = () => {
       <nav>
         <ul className="space-y-2">
           <li>
-            <a href="#" className="flex items-center p-2 rounded-lg bg-primary/90">
+            <Link to="/dashboard" className={`flex items-center p-2 rounded-lg ${isActive('/dashboard') ? 'bg-primary/90' : 'hover:bg-primary/90'}`}>
               <svg className="w-5 h-5 mr-3" fill="currentColor" viewBox="0 0 20 20">
                 <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
               </svg>
               Dashboard
-            </a>
+            </Link>
           </li>
           <li>
-            <a href="#" className="flex items-center p-2 rounded-lg hover:bg-primary/90">
+            <Link to="/dashboard/relatorios" className={`flex items-center p-2 rounded-lg ${isActive('/dashboard/relatorios') ? 'bg-primary/90' : 'hover:bg-primary/90'}`}>
               <svg className="w-5 h-5 mr-3" fill="currentColor" viewBox="0 0 20 20">
                 <path d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM5 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM11 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zM11 13a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
               </svg>
               Relatórios
-            </a>
+            </Link>
           </li>
           <li>
-            <a href="#" className="flex items-center p-2 rounded-lg hover:bg-primary/90">
+            <Link to="/dashboard/atividades" className={`flex items-center p-2 rounded-lg ${isActive('/dashboard/atividades') ? 'bg-primary/90' : 'hover:bg-primary/90'}`}>
               <svg className="w-5 h-5 mr-3" fill="currentColor" viewBox="0 0 20 20">
                 <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z" />
                 <path fillRule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clipRule="evenodd" />
               </svg>
               Atividades
-            </a>
+            </Link>
           </li>
           <li>
-            <a href="#" className="flex items-center p-2 rounded-lg hover:bg-primary/90">
+            <Link to="/dashboard/dicas" className={`flex items-center p-2 rounded-lg ${isActive('/dashboard/dicas') ? 'bg-primary/90' : 'hover:bg-primary/90'}`}>
               <svg className="w-5 h-5 mr-3" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
               </svg>
               Dicas
-            </a>
+            </Link>
           </li>
           <li>
-            <a href="#" className="flex items-center p-2 rounded-lg hover:bg-green-700">
+            <Link to="/dashboard/configuracoes" className={`flex items-center p-2 rounded-lg ${isActive('/dashboard/configuracoes') ? 'bg-primary/90' : 'hover:bg-primary/90'}`}>
               <svg className="w-5 h-5 mr-3" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clipRule="evenodd" />
               </svg>
               Configurações
-            </a>
+            </Link>
           </li>
         </ul>
       </nav>
@@ -76,7 +81,7 @@ interface MetricCardProps {
 
 const MetricCard = ({ title, value, change, isPositive, icon }: MetricCardProps) => {
   return (
-    <div className="bg-card text-card-foreground rounded-lg shadow p-6">
+    <div className="bg-card text-card-foreground rounded-lg shadow p-6 transition-transform duration-200 hover:-translate-y-0.5 hover:shadow-lg">
       <div className="flex items-center justify-between">
         <div>
           <p className="text-sm font-medium text-muted-foreground">{title}</p>
@@ -171,11 +176,42 @@ const ActivityTable = () => {
   );
 };
 
-// Componente de Dicas
+// Componente de Dicas + Gamificação leve
 const TipsSection = () => {
+  const { user } = useAuth();
+  const points = user?.points ?? 0;
+  const goal = 1000;
+  const progressPercent = Math.min(100, Math.round((points / goal) * 100));
+  const badges = [
+    { threshold: 100, label: 'Explorador', achieved: points >= 100 },
+    { threshold: 500, label: 'Guardião', achieved: points >= 500 },
+    { threshold: 1000, label: 'Master Sustentável', achieved: points >= 1000 },
+  ];
+
   return (
     <div className="bg-white rounded-lg shadow p-6">
-      <h3 className="text-lg font-medium text-gray-900">Dicas para Redução</h3>
+      <h3 className="text-lg font-medium text-gray-900">Seu Progresso</h3>
+      <div className="mt-2 w-full bg-gray-100 rounded-full h-3 overflow-hidden">
+        <div
+          className="bg-primary h-3 rounded-full transition-all"
+          style={{ width: `${progressPercent}%` }}
+        />
+      </div>
+      <div className="mt-4 grid grid-cols-1 sm:grid-cols-3 gap-4">
+        {badges.map((b) => (
+          <div key={b.threshold} className={`flex items-center p-3 rounded-lg border ${b.achieved ? 'border-primary bg-primary/10' : 'border-gray-200 bg-gray-50'}`}>
+            <svg className={`h-5 w-5 ${b.achieved ? 'text-primary' : 'text-gray-400'} mr-2`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+            </svg>
+            <div>
+              <p className="text-sm font-medium">{b.label}</p>
+              <p className="text-xs text-gray-500">{b.threshold} pts</p>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <h3 className="text-lg font-medium text-gray-900 mt-6">Dicas para Redução</h3>
       <ul className="mt-4 space-y-3">
         <li className="flex items-start">
           <svg className="h-5 w-5 text-primary mr-2 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
@@ -209,8 +245,45 @@ const TipsSection = () => {
   );
 };
 
+// Conteúdos de páginas internas
+const RelatoriosContent = () => (
+  <div>
+    <h2 className="text-2xl font-bold text-foreground mb-6">Relatórios</h2>
+    <div className="bg-card text-card-foreground rounded-lg shadow p-6">
+      <p className="text-muted-foreground">Visualize relatórios de emissões, consumo e economia por período.</p>
+    </div>
+  </div>
+);
+
+const AtividadesContent = () => (
+  <div>
+    <h2 className="text-2xl font-bold text-foreground mb-6">Atividades</h2>
+    <ActivityTable />
+  </div>
+);
+
+const DicasContent = () => (
+  <div>
+    <h2 className="text-2xl font-bold text-foreground mb-6">Dicas</h2>
+    <TipsSection />
+  </div>
+);
+
+const ConfiguracoesContent = () => (
+  <div>
+    <h2 className="text-2xl font-bold text-foreground mb-6">Configurações</h2>
+    <div className="bg-card text-card-foreground rounded-lg shadow p-6">
+      <p className="text-muted-foreground">Defina preferências da conta, empresa e notificações.</p>
+    </div>
+  </div>
+);
+
 export default function Dashboard() {
-  const userName = 'Empresa ABC';
+  const { user } = useAuth();
+  const userName = user?.name || 'Convidado';
+  const location = useLocation();
+  const path = location.pathname;
+  const isOverview = path === '/dashboard';
   
   return (
     <div className="flex h-screen bg-background">
@@ -220,7 +293,7 @@ export default function Dashboard() {
         <div className="flex justify-between items-center mb-8">
           <div>
             <h1 className="text-2xl font-bold text-foreground">Dashboard</h1>
-            <p className="text-muted-foreground">Bem-vindo de volta, {userName}</p>
+            <p className="text-muted-foreground">Bem-vindo de volta, {user?.name || 'Convidado'}</p>
           </div>
           <div className="flex items-center">
             <button className="bg-card p-2 rounded-full shadow mr-4">
@@ -231,72 +304,84 @@ export default function Dashboard() {
             <div className="flex items-center">
               <img className="h-10 w-10 rounded-full border-2 border-primary" src="https://via.placeholder.com/40" alt="Avatar" />
               <div className="ml-3">
-                <p className="text-sm font-medium text-gray-900">Admin</p>
-                <p className="text-xs text-gray-500">admin@pegadazero.com</p>
+                <p className="text-sm font-medium text-gray-900">{user?.role || 'Visitante'}</p>
+                <p className="text-xs text-gray-500">{user?.email || 'login@pegadazero.com'}</p>
               </div>
             </div>
           </div>
         </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <MetricCard 
-            title="Pegada de Carbono Total" 
-            value="675 kg CO2" 
-            change="-12%" 
-            isPositive={true}
-            icon={
-              <svg className="h-6 w-6 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
-              </svg>
-            }
-          />
-          <MetricCard 
-            title="Consumo de Energia" 
-            value="1,240 kWh" 
-            change="-8%" 
-            isPositive={true}
-            icon={
-              <svg className="h-6 w-6 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-              </svg>
-            }
-          />
-          <MetricCard 
-            title="Transporte" 
-            value="320 kg CO2" 
-            change="+5%" 
-            isPositive={false}
-            icon={
-              <svg className="h-6 w-6 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
-              </svg>
-            }
-          />
-          <MetricCard 
-            title="Economia Estimada" 
-            value="R$ 3,450" 
-            change="+18%" 
-            isPositive={true}
-            icon={
-              <svg className="h-6 w-6 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-            }
-          />
-        </div>
-        
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
-          <div className="lg:col-span-2">
-            <Chart />
-          </div>
-          <div>
-            <TipsSection />
-          </div>
-        </div>
-        
-        <div className="mb-8">
-          <ActivityTable />
-        </div>
+        {isOverview ? (
+          <>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+              <MetricCard 
+                title="Pegada de Carbono Total" 
+                value="675 kg CO2" 
+                change="-12%" 
+                isPositive={true}
+                icon={
+                  <svg className="h-6 w-6 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                  </svg>
+                }
+              />
+              <MetricCard 
+                title="Consumo de Energia" 
+                value="1,240 kWh" 
+                change="-8%" 
+                isPositive={true}
+                icon={
+                  <svg className="h-6 w-6 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                  </svg>
+                }
+              />
+              <MetricCard 
+                title="Transporte" 
+                value="320 kg CO2" 
+                change="+5%" 
+                isPositive={false}
+                icon={
+                  <svg className="h-6 w-6 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+                  </svg>
+                }
+              />
+              <MetricCard 
+                title="Economia Estimada" 
+                value="R$ 3,450" 
+                change="+18%" 
+                isPositive={true}
+                icon={
+                  <svg className="h-6 w-6 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                }
+              />
+            </div>
+            
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
+              <div className="lg:col-span-2">
+                <Chart />
+              </div>
+              <div>
+                <TipsSection />
+              </div>
+            </div>
+            
+            <div className="mb-8">
+              <ActivityTable />
+            </div>
+          </>
+        ) : path === '/dashboard/relatorios' ? (
+          <RelatoriosContent />
+        ) : path === '/dashboard/atividades' ? (
+          <AtividadesContent />
+        ) : path === '/dashboard/dicas' ? (
+          <DicasContent />
+        ) : (
+          <ConfiguracoesContent />
+        )}
       </div>
     </div>
   );
