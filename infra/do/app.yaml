@@ -18,18 +18,18 @@ ingress:
 
 services:
   - name: backend
-    environment_slug: docker
+    environment_slug: python
+    github:
+      repo: "<OWNER>/<REPO>"
+      branch: main
+      deploy_on_push: true
+    source_dir: "/"
+    run_command: "uvicorn app.main:app --host 0.0.0.0 --port 5000"
+    http_port: 5000
     instance_count: 1
     instance_size_slug: basic-xxs
-    http_port: 5000
     routes:
       - path: /api
-    image:
-      registry_type: DOCR
-      repository: pegadazero-backend
-      tag: latest
-      deploy_on_push:
-        enabled: true
     envs:
       - key: SQL_DATABASE_URL
         value: sqlite:////app/data/pegadazero.db
@@ -40,24 +40,24 @@ services:
         type: GENERAL
         scope: RUN_TIME
       - key: KIWIFY_API_KEY
-        value: "<SET_IN_CONTROL_PANEL_OR_AS_SECRET>"
+        value: "<SET_IN_CONTROL_PANEL_AS_SECRET>"
         type: SECRET
         scope: RUN_TIME
 
 static_sites:
   - name: frontend
     environment_slug: html
+    github:
+      repo: "<OWNER>/<REPO>"
+      branch: main
+      deploy_on_push: true
+    source_dir: "/"
+    build_command: "npm ci && npm run build"
+    output_dir: "dist"
     instance_count: 1
     instance_size_slug: basic-xxs
     routes:
-      - path: /
-    github:
-      repo: "<GITHUB_OWNER>/<REPO_NAME>"
-      branch: main
-      deploy_on_push: true
-    source_dir: /
-    build_command: npm ci && npm run build
-    output_dir: dist
+      - path: "/"
     envs:
       - key: VITE_API_URL
         value: "${APP_URL}/api"
