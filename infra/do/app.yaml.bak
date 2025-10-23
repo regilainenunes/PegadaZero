@@ -1,0 +1,65 @@
+name: pegadazero
+region: nyc
+features:
+  - buildpack-stack=ubuntu-22
+
+ingress:
+  rules:
+    - component:
+        name: backend
+      match:
+        path:
+          prefix: /api
+    - component:
+        name: frontend
+      match:
+        path:
+          prefix: /
+
+services:
+  - name: backend
+    environment_slug: python
+    github:
+      repo: "regilainenunes/PegadaZero"
+      branch: main
+      deploy_on_push: true
+    source_dir: "/"
+    run_command: "uvicorn app.main:app --host 0.0.0.0 --port 5000"
+    http_port: 5000
+    instance_count: 1
+    instance_size_slug: basic-xxs
+    routes:
+      - path: /api
+    envs:
+      - key: SQL_DATABASE_URL
+        value: sqlite:////app/data/pegadazero.db
+        type: GENERAL
+        scope: RUN_TIME
+      - key: KIWIFY_API_URL
+        value: https://api.kiwify.com
+        type: GENERAL
+        scope: RUN_TIME
+      - key: KIWIFY_API_KEY
+        value: "<SET_IN_CONTROL_PANEL_AS_SECRET>"
+        type: SECRET
+        scope: RUN_TIME
+
+static_sites:
+  - name: frontend
+    environment_slug: html
+    github:
+      repo: "regilainenunes/PegadaZero"
+      branch: main
+      deploy_on_push: true
+    source_dir: "/"
+    build_command: "npm ci && npm run build"
+    output_dir: "dist"
+    instance_count: 1
+    instance_size_slug: basic-xxs
+    routes:
+      - path: "/"
+    envs:
+      - key: VITE_API_URL
+        value: "${APP_URL}/api"
+        type: GENERAL
+        scope: BUILD_TIME

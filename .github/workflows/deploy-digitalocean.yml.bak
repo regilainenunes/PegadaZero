@@ -1,0 +1,21 @@
+name: Deploy App Platform (sem Docker)
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  update-app-spec:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Authenticate doctl
+        uses: digitalocean/action-doctl@v2
+        with:
+          token: ${{ secrets.DO_API_TOKEN }}
+
+      - name: Atualizar App Platform com spec
+        run: doctl apps update ${{ secrets.DO_APP_ID }} --spec infra/do/app.yaml --format ID,DefaultIngress,ActiveDeploymentID

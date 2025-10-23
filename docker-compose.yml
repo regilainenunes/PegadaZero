@@ -4,14 +4,25 @@ services:
     build:
       context: .
       dockerfile: app/Dockerfile
+    env_file:
+      - .env.local
     environment:
       - SQL_DATABASE_URL=sqlite:///./data/pegadazero.db
-      - KIWIFY_API_URL=${KIWIFY_API_URL:-https://api.kiwify.com}
+      - KIWIFY_API_URL=${KIWIFY_API_URL:-https://api.kiwify.com.br}
       - KIWIFY_API_KEY=${KIWIFY_API_KEY:-}
+      - SECRET_KEY=${SECRET_KEY:-your-secret-key-here}
+      - ACCESS_TOKEN_EXPIRE_MINUTES=${ACCESS_TOKEN_EXPIRE_MINUTES:-30}
+      - JWT_ALGORITHM=${JWT_ALGORITHM:-HS256}
+      - ENV=${ENV:-development}
     volumes:
       - backend_data:/app/data
     ports:
       - "5000:5000"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
   frontend:
     build:

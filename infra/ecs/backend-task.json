@@ -9,12 +9,25 @@
   "containerDefinitions": [
     {
       "name": "backend",
-      "image": "<ECR_REGISTRY>/<ECR_BACKEND_REPO>:<TAG>",
+      "image": "<ECR_REGISTRY>/pegadazero-backend:<TAG>",
       "essential": true,
       "portMappings": [{ "containerPort": 5000, "protocol": "tcp" }],
       "environment": [
         { "name": "SQL_DATABASE_URL", "value": "sqlite:////app/data/pegadazero.db" },
         { "name": "KIWIFY_API_URL", "value": "https://api.kiwify.com" }
+      ],
+      "secrets": [
+        {
+          "name": "KIWIFY_API_KEY",
+          "valueFrom": "arn:aws:secretsmanager:<AWS_REGION>:<ACCOUNT_ID>:secret:pegadazero/kiwify-api-key"
+        }
+      ],
+      "mountPoints": [
+        {
+          "sourceVolume": "pegadazero-data",
+          "containerPath": "/app/data",
+          "readOnly": false
+        }
       ],
       "logConfiguration": {
         "logDriver": "awslogs",
@@ -23,6 +36,16 @@
           "awslogs-region": "<AWS_REGION>",
           "awslogs-stream-prefix": "ecs"
         }
+      }
+    }
+  ],
+  "volumes": [
+    {
+      "name": "pegadazero-data",
+      "efsVolumeConfiguration": {
+        "fileSystemId": "<EFS_FILE_SYSTEM_ID>",
+        "rootDirectory": "/pegadazero-data",
+        "transitEncryption": "ENABLED"
       }
     }
   ]

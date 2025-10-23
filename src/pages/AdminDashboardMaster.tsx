@@ -251,7 +251,7 @@ export default function AdminDashboardMaster() {
               <MapContainer center={[-14.2350, -51.9253]} zoom={4} className="h-full w-full">
                 <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
                 {mapPoints.map((p) => (
-                  <CircleMarker key={p.id} center={[p.lat, p.lng]} radius={8} pathOptions={{ color: p.level === 'alto' ? '#ef4444' : p.level === 'medio' ? '#f59e0b' : '#22c55e' }}>
+                  <CircleMarker key={p.id} center={[p.lat, p.lng]} pathOptions={{ color: p.level === 'alto' ? '#ef4444' : p.level === 'medio' ? '#f59e0b' : '#22c55e' }}>
                     <Popup>
                       <div className="space-y-1">
                         <div className="font-semibold">{p.name}</div>

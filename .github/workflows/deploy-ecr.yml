@@ -1,4 +1,4 @@
-name: Build and Push to AWS ECR
+name: Deploy to AWS ECS via ECR
 
 on:
   push:
@@ -6,15 +6,17 @@ on:
   workflow_dispatch:
 
 jobs:
-  build-and-push:
+  build-and-deploy:
     runs-on: ubuntu-latest
     permissions:
       id-token: write
       contents: read
     env:
       AWS_REGION: ${{ secrets.AWS_REGION }}
-      ECR_BACKEND_REPO: ${{ secrets.ECR_BACKEND_REPO }}
-      ECR_FRONTEND_REPO: ${{ secrets.ECR_FRONTEND_REPO }}
+      ECR_REGISTRY: ${{ secrets.ECR_REGISTRY }}
+      ECS_CLUSTER: ${{ secrets.ECS_CLUSTER }}
+      ECS_BACKEND_SERVICE: ${{ secrets.ECS_BACKEND_SERVICE }}
+      ECS_FRONTEND_SERVICE: ${{ secrets.ECS_FRONTEND_SERVICE }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -24,28 +26,98 @@ jobs:
         with:
           aws-region: ${{ env.AWS_REGION }}
           role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
-          role-session-name: github-actions-ecr
+          role-session-name: github-actions-ecs-deploy
 
       - name: Login to Amazon ECR
         id: ecr
         uses: aws-actions/amazon-ecr-login@v1
 
-      - name: Set tags
+      - name: Set image tags
         id: tags
         run: |
-          echo "backend_tag=${{ steps.ecr.outputs.registry }}/${{ env.ECR_BACKEND_REPO }}:$(date +%Y%m%d%H%M%S)-${GITHUB_SHA::7}" >> $GITHUB_OUTPUT
-          echo "frontend_tag=${{ steps.ecr.outputs.registry }}/${{ env.ECR_FRONTEND_REPO }}:$(date +%Y%m%d%H%M%S)-${GITHUB_SHA::7}" >> $GITHUB_OUTPUT
+          TAG=$(date +%Y%m%d%H%M%S)-${GITHUB_SHA::7}
+          echo "backend_image=${{ env.ECR_REGISTRY }}/pegadazero-backend:$TAG" >> $GITHUB_OUTPUT
+          echo "frontend_image=${{ env.ECR_REGISTRY }}/pegadazero-frontend:$TAG" >> $GITHUB_OUTPUT
+          echo "tag=$TAG" >> $GITHUB_OUTPUT
 
-      - name: Build backend image
+      - name: Build and push backend image
         run: |
-          docker build -f app/Dockerfile -t ${{ steps.tags.outputs.backend_tag }} .
+          docker build -f app/Dockerfile -t ${{ steps.tags.outputs.backend_image }} .
+          docker push ${{ steps.tags.outputs.backend_image }}
 
-      - name: Build frontend image
+      - name: Build and push frontend image
         run: |
-          docker build -f Dockerfile.frontend -t ${{ steps.tags.outputs.frontend_tag }} .
+          docker build -f Dockerfile.frontend -t ${{ steps.tags.outputs.frontend_image }} .
+          docker push ${{ steps.tags.outputs.frontend_image }}
 
-      - name: Push backend image
-        run: docker push ${{ steps.tags.outputs.backend_tag }}
+      - name: Update backend task definition
+        run: |
+          # Substitui placeholders na task definition do backend
+          sed -i 's|<ECR_REGISTRY>|${{ env.ECR_REGISTRY }}|g' infra/ecs/backend-task.json
+          sed -i 's|<TAG>|${{ steps.tags.outputs.tag }}|g' infra/ecs/backend-task.json
+          sed -i 's|<AWS_REGION>|${{ env.AWS_REGION }}|g' infra/ecs/backend-task.json
+          sed -i 's|<ACCOUNT_ID>|${{ secrets.AWS_ACCOUNT_ID }}|g' infra/ecs/backend-task.json
+          sed -i 's|<EFS_FILE_SYSTEM_ID>|${{ secrets.EFS_FILE_SYSTEM_ID }}|g' infra/ecs/backend-task.json
 
-      - name: Push frontend image
-        run: docker push ${{ steps.tags.outputs.frontend_tag }}
+      - name: Update frontend task definition
+        run: |
+          # Substitui placeholders na task definition do frontend
+          sed -i 's|<ECR_REGISTRY>|${{ env.ECR_REGISTRY }}|g' infra/ecs/frontend-task.json
+          sed -i 's|<TAG>|${{ steps.tags.outputs.tag }}|g' infra/ecs/frontend-task.json
+          sed -i 's|<AWS_REGION>|${{ env.AWS_REGION }}|g' infra/ecs/frontend-task.json
+          sed -i 's|<ACCOUNT_ID>|${{ secrets.AWS_ACCOUNT_ID }}|g' infra/ecs/frontend-task.json
+          sed -i 's|<ALB_DNS_NAME>|${{ secrets.ALB_DNS_NAME }}|g' infra/ecs/frontend-task.json
+
+      - name: Register backend task definition
+        id: backend-task
+        run: |
+          TASK_DEF_ARN=$(aws ecs register-task-definition \
+            --cli-input-json file://infra/ecs/backend-task.json \
+            --query 'taskDefinition.taskDefinitionArn' \
+            --output text)
+          echo "task_def_arn=$TASK_DEF_ARN" >> $GITHUB_OUTPUT
+
+      - name: Register frontend task definition
+        id: frontend-task
+        run: |
+          TASK_DEF_ARN=$(aws ecs register-task-definition \
+            --cli-input-json file://infra/ecs/frontend-task.json \
+            --query 'taskDefinition.taskDefinitionArn' \
+            --output text)
+          echo "task_def_arn=$TASK_DEF_ARN" >> $GITHUB_OUTPUT
+
+      - name: Update backend ECS service
+        run: |
+          aws ecs update-service \
+            --cluster ${{ env.ECS_CLUSTER }} \
+            --service ${{ env.ECS_BACKEND_SERVICE }} \
+            --task-definition ${{ steps.backend-task.outputs.task_def_arn }} \
+            --force-new-deployment
+
+      - name: Update frontend ECS service
+        run: |
+          aws ecs update-service \
+            --cluster ${{ env.ECS_CLUSTER }} \
+            --service ${{ env.ECS_FRONTEND_SERVICE }} \
+            --task-definition ${{ steps.frontend-task.outputs.task_def_arn }} \
+            --force-new-deployment
+
+      - name: Wait for backend deployment
+        run: |
+          aws ecs wait services-stable \
+            --cluster ${{ env.ECS_CLUSTER }} \
+            --services ${{ env.ECS_BACKEND_SERVICE }}
+
+      - name: Wait for frontend deployment
+        run: |
+          aws ecs wait services-stable \
+            --cluster ${{ env.ECS_CLUSTER }} \
+            --services ${{ env.ECS_FRONTEND_SERVICE }}
+
+      - name: Deployment summary
+        run: |
+          echo "✅ Deployment completed successfully!"
+          echo "Backend image: ${{ steps.tags.outputs.backend_image }}"
+          echo "Frontend image: ${{ steps.tags.outputs.frontend_image }}"
+          echo "Backend task: ${{ steps.backend-task.outputs.task_def_arn }}"
+          echo "Frontend task: ${{ steps.frontend-task.outputs.task_def_arn }}"

@@ -9,11 +9,11 @@
   "containerDefinitions": [
     {
       "name": "frontend",
-      "image": "<ECR_REGISTRY>/<ECR_FRONTEND_REPO>:<TAG>",
+      "image": "<ECR_REGISTRY>/pegadazero-frontend:<TAG>",
       "essential": true,
       "portMappings": [{ "containerPort": 80, "protocol": "tcp" }],
       "environment": [
-        { "name": "VITE_API_URL", "value": "https://api.seudominio.com/api" }
+        { "name": "VITE_API_URL", "value": "https://<ALB_DNS_NAME>/api" }
       ],
       "logConfiguration": {
         "logDriver": "awslogs",
