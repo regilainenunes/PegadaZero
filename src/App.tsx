@@ -11,6 +11,9 @@ import Legal from './pages/Legal'
 import Privacidade from './pages/Privacidade'
 import Termos from './pages/Termos'
 import Seguranca from './pages/Seguranca'
+import Pricing from './pages/Pricing'
+import PaymentSuccess from './pages/PaymentSuccess'
+import PaymentCancel from './pages/PaymentCancel'
 import ProtectedRoute from './components/ProtectedRoute'
 import { AuthProvider } from './contexts/AuthContext'
 import MasterRoute from './components/MasterRoute'
@@ -24,6 +27,9 @@ function App() {
         <Route path="/" element={<HomePage />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/pricing" element={<Pricing />} />
+        <Route path="/payment/success" element={<PaymentSuccess />} />
+        <Route path="/payment/cancel" element={<PaymentCancel />} />
         <Route path="/empresa" element={<Empresa />} />
         <Route path="/sobre-nos" element={<SobreNos />} />
         <Route path="/blog" element={<Blog />} />

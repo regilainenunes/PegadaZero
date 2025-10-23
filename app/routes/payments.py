@@ -53,12 +53,16 @@ class WebhookPayload(BaseModel):
 
 @router.post("/webhook")
 async def kiwify_webhook(request: Request, payload: WebhookPayload):
-    # Verifica assinatura (se enviada pelo Kiwify)
-    signature = request.headers.get("X-Kiwify-Signature", "")
-    client = KiwifyClient()
-    if not client.verify_webhook(signature, await request.body()):
-        raise HTTPException(status_code=400, detail="Webhook inválido")
-    payment = update_payment_status(order_id=payload.order_id, status=payload.status)
+    """
+    Webhook para receber notificações de pagamento do Kiwify
+    URL: https://seudominio.com/api/payments/webhook
+    """
+    # Verificar se o pagamento existe
+    payment = update_payment_status(payload.order_id, payload.status)
     if not payment:
         raise HTTPException(status_code=404, detail="Pagamento não encontrado")
+    
+    # Log do webhook para auditoria
+    print(f"Webhook recebido - Order ID: {payload.order_id}, Status: {payload.status}")
+    
     return {"message": "Status atualizado", "payment_id": payment.id, "status": payment.status}

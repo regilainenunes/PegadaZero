@@ -1,7 +1,8 @@
-import { Link } from 'react-router-dom'
-import { useEffect, useState } from 'react'
+import React from 'react';
+import { Link } from 'react-router-dom';
+import { useEffect, useState } from 'react';
 
-export default function HomePage() {
+const HomePage: React.FC = () => {
   // Banner rotativo a partir de imagens na pasta public
   const banners = ['/Banner1.jpg', '/Banner2.jpg', '/Banner3.jpg', '/Banner4.jpg']
   const [currentBanner, setCurrentBanner] = useState(0)
@@ -115,12 +116,12 @@ export default function HomePage() {
     <div className="min-h-screen bg-gradient-to-b from-green-50 to-green-100">
       <header className="container mx-auto px-4 py-6 flex justify-between items-center">
         <div className="flex items-center">
-          <img src="/logotipo.svg" alt="PegadaZero" className="h-10 w-auto" />
+          <img src="/LogoPegadaZero1.svg" alt="PegadaZero" className="h-10 w-auto" />
         </div>
         <nav>
           <ul className="flex items-center gap-6">
             <li><a href="#features" className="text-green-700 hover:text-green-900">Recursos</a></li>
-            <li><a href="#pricing" className="text-green-700 hover:text-green-900">Preços</a></li>
+            <li><Link to="/pricing" className="text-green-700 hover:text-green-900">Preços</Link></li>
             <li className="relative group">
               <button className="text-green-700 hover:text-green-900">Institucional</button>
               <div className="absolute right-0 mt-2 w-56 bg-white border border-green-100 rounded-md shadow-lg opacity-0 scale-95 group-hover:opacity-100 group-hover:scale-100 pointer-events-none group-hover:pointer-events-auto transition ease-out duration-150 z-50">
@@ -336,5 +337,7 @@ export default function HomePage() {
         </div>
       </footer>
     </div>
-  )
-}
+  );
+};
+
+export default HomePage;

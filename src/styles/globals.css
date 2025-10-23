@@ -2,6 +2,172 @@
 @tailwind components;
 @tailwind utilities;
 
+/* PegadaZero Color Palette */
+:root {
+  /* Primary Colors */
+  --verde-folha: #2BA84A;        /* Verde folha vibrante */
+  --azul-esverdeado: #007E80;    /* Azul-esverdeado (transição da base da pegada) */
+  --verde-escuro: #004D1C;       /* Verde escuro (usado no texto "PegadaZero") */
+  --verde-claro: #C4EAD0;        /* Verde claro suave (reflexo de luz no degradê) */
+  --branco: #FFFFFF;             /* Branco (fundo e áreas neutras) */
+  
+  /* Gradients */
+  --gradient-primary: linear-gradient(135deg, var(--verde-folha) 0%, var(--azul-esverdeado) 100%);
+  --gradient-light: linear-gradient(135deg, var(--verde-claro) 0%, var(--branco) 100%);
+  --gradient-dark: linear-gradient(135deg, var(--verde-escuro) 0%, var(--azul-esverdeado) 100%);
+}
+
+/* Base Styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+  background-color: var(--branco);
+  color: var(--verde-escuro);
+  line-height: 1.6;
+}
+
+/* Typography */
+h1, h2, h3, h4, h5, h6 {
+  color: var(--verde-escuro);
+  font-weight: 600;
+}
+
+/* Buttons */
+.btn-primary {
+  background: var(--gradient-primary);
+  color: var(--branco);
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(43, 168, 74, 0.3);
+}
+
+.btn-secondary {
+  background: transparent;
+  color: var(--verde-folha);
+  border: 2px solid var(--verde-folha);
+  padding: 10px 22px;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-secondary:hover {
+  background: var(--verde-folha);
+  color: var(--branco);
+}
+
+/* Cards */
+.card {
+  background: var(--branco);
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 4px 20px rgba(0, 77, 28, 0.1);
+  border: 1px solid var(--verde-claro);
+  transition: all 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 30px rgba(0, 77, 28, 0.15);
+}
+
+/* Navigation */
+.navbar {
+  background: var(--branco);
+  border-bottom: 1px solid var(--verde-claro);
+  backdrop-filter: blur(10px);
+}
+
+/* Forms */
+.form-input {
+  width: 100%;
+  padding: 12px 16px;
+  border: 2px solid var(--verde-claro);
+  border-radius: 8px;
+  font-size: 16px;
+  transition: all 0.3s ease;
+  background: var(--branco);
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: var(--verde-folha);
+  box-shadow: 0 0 0 3px rgba(43, 168, 74, 0.1);
+}
+
+/* Alerts */
+.alert-success {
+  background: var(--verde-claro);
+  color: var(--verde-escuro);
+  border: 1px solid var(--verde-folha);
+  padding: 12px 16px;
+  border-radius: 8px;
+}
+
+.alert-error {
+  background: #fee;
+  color: #c53030;
+  border: 1px solid #fc8181;
+  padding: 12px 16px;
+  border-radius: 8px;
+}
+
+/* Loading */
+.loading-spinner {
+  border: 3px solid var(--verde-claro);
+  border-top: 3px solid var(--verde-folha);
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Utility Classes */
+.text-primary { color: var(--verde-folha); }
+.text-secondary { color: var(--azul-esverdeado); }
+.text-dark { color: var(--verde-escuro); }
+.text-light { color: var(--verde-claro); }
+
+.bg-primary { background-color: var(--verde-folha); }
+.bg-secondary { background-color: var(--azul-esverdeado); }
+.bg-dark { background-color: var(--verde-escuro); }
+.bg-light { background-color: var(--verde-claro); }
+
+.gradient-primary { background: var(--gradient-primary); }
+.gradient-light { background: var(--gradient-light); }
+.gradient-dark { background: var(--gradient-dark); }
+
+/* Responsive */
+@media (max-width: 768px) {
+  .card {
+    padding: 16px;
+  }
+  
+  .btn-primary, .btn-secondary {
+    padding: 10px 20px;
+    font-size: 14px;
+  }
+}
+
 @layer base {
   html, body {
     @apply font-sans;
@@ -71,10 +237,10 @@
 
 @layer base {
   * {
-    @apply border-border;
+    @apply border-gray-200;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-white text-gray-900;
     font-feature-settings: "rlig" 1, "calt" 1;
   }
 }

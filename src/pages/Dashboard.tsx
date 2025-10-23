@@ -8,7 +8,7 @@ const Sidebar = () => {
   return (
     <div className="bg-primary text-primary-foreground w-64 min-h-screen p-4">
       <div className="flex items-center mb-8">
-        <img src="/logotipo.svg" alt="PegadaZero" className="h-10 w-auto" />
+        <img src="/LogoPegadaZero1.svg" alt="PegadaZero" className="h-10 w-auto" />
         <span className="ml-2 text-xl font-bold">PegadaZero</span>
       </div>
       
